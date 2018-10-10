@@ -7,8 +7,22 @@
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
-    main = new QLabel("O");
-    aux = new QLabel("y");
+    resize(720/5,1280/5);
+
+    main = new QLabel("X");
+    main->setAlignment(Qt::AlignTop|Qt::AlignLeft);
+    auto palette = main->palette();
+    palette.setColor(QPalette::Background, Qt::blue);
+    main->setAutoFillBackground(true);
+    main->setPalette(palette);
+
+    aux = new QLabel("OO");
+    aux->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+    palette = aux->palette();
+    palette.setColor(QPalette::Background, Qt::yellow);
+    aux->setAutoFillBackground(true);
+    aux->setPalette(palette);
+
     auto layout = new QVBoxLayout;
     layout->addWidget(main);
     layout->addWidget(aux);
@@ -17,20 +31,27 @@ Widget::Widget(QWidget *parent)
 
 void Widget::resizeEvent(QResizeEvent *event)
 {
-        auto f = main->font();
-        QFontMetrics fm(f);
+    qDebug() << width() << height();
 
-        auto cur = fm.horizontalAdvance(main->text());
-        float factor = (float)(width()-1) / cur;
+    auto conRect = this->layout()->contentsRect();
+    qDebug() << conRect;
 
-        qDebug() << width() << height()
-             << main->width() << main->height()
-             << "font" << fm.horizontalAdvance(main->text()) << fm.height() << f.pointSizeF() << factor
-             << "eventprop" << event->spontaneous() << event->isAccepted();
+    auto f = main->font();
+    QFontMetrics fm(f);
 
-        f.setPointSizeF(f.pointSizeF()*factor);
-        if(factor < 0.9 || factor > 1.1)
-            main->setFont(f);
+    auto curh = fm.horizontalAdvance(main->text());
+    float factor = (float)(conRect.width()-5) / curh;
+
+    qDebug() << main->width() << main->height()
+         << "font" << fm.horizontalAdvance(main->text()) << fm.height() << f.pointSizeF() << factor;
+
+    f.setPointSizeF(f.pointSizeF()*factor);
+    if(factor > 1.1){
+        main->setFont(f);
+        fm = QFontMetrics(f);
+        qDebug() << main->size() << fm.height();
+        main->resize(conRect.width(), fm.height()+2);
+    }
 
     QWidget::resizeEvent(event);
 }
