@@ -5,12 +5,11 @@
 #-------------------------------------------------
 
 QT       += network
-
 QT       -= gui
 
 TARGET = scoreboard
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += sharedlib c++14
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
