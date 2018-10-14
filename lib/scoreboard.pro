@@ -4,8 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += network
-QT       -= gui
+QT       += core gui widgets network
 
 TARGET = scoreboard
 TEMPLATE = lib
@@ -23,10 +22,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        scoreboard.cpp
+        scoreboard.cpp \
+    displayconf.cpp
 
 HEADERS += \
-        scoreboard.h
+        scoreboard.h \
+    displayconf.h \
+    protocol.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QTextStream>
 
+#include "protocol.h"
+
 Scoreboard::Scoreboard()
 {
     connect(&listener, &QTcpServer::newConnection, this, [this]{
@@ -16,7 +18,7 @@ Scoreboard::Scoreboard()
         while(listener.hasPendingConnections());
     });
 
-    if( ! listener.listen(QHostAddress::Any, 9233))
+    if( ! listener.listen(QHostAddress::Any, scoreboard::port))
     {
         qDebug() << listener.errorString();
     }
