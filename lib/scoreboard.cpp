@@ -1,7 +1,6 @@
 #include "scoreboard.h"
 
 #include <QDebug>
-#include <QTextStream>
 
 #include "protocol.h"
 
@@ -43,6 +42,9 @@ Client::Client(QTcpSocket& socket)
     connect(&socket, &QTcpSocket::disconnected, this, [this]{
         emit disconnected(this);
     });
+    connect(&in, &LineParser::newLine, [this](QString line){
+       emit newLine(this, std::move(line));
+    });
     qDebug() << "new socket from:" << socket.peerAddress();
 }
 
@@ -53,33 +55,6 @@ Client::~Client()
 
 void Client::onReadyRead()
 {
-    in.append(socket.readAll());
-    qDebug() << "data:" << in;
-    QTextStream ts(&in);
-    while(1)
-    {
-        auto line =  ts.readLine();
-
-        if(line.isNull())
-        {
-            in = ts.readAll();
-            break;
-        }
-        else
-        {
-            if(ts.atEnd())
-            {
-                in = line;
-                break;
-            }
-            process(std::move(line));
-        }
-    }
-
-    qDebug() << "check" << in;
+    in.process(socket.readAll());
 }
 
-void Client::process(QString line)
-{
-    qDebug() << "process line:" << line;
-}

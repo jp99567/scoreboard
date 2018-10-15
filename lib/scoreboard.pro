@@ -23,12 +23,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         scoreboard.cpp \
-    displayconf.cpp
+    displayconf.cpp \
+    LineParser.cpp
 
 HEADERS += \
         scoreboard.h \
     displayconf.h \
-    protocol.h
+    protocol.h \
+    LineParser.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

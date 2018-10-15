@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QTcpSocket>
+#include "LineParser.h"
 
 class QLabel;
 class QCheckBox;
@@ -27,5 +28,6 @@ private:
     QComboBox* role;
 
     QTcpSocket socket;
+    LineParser in;
 };
 

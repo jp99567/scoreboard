@@ -3,16 +3,17 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QString>
 #include <vector>
 #include <memory>
+
+#include "LineParser.h"
 
 class Client : public QObject
 {
     Q_OBJECT
 
     QTcpSocket& socket;
-    QString in;
+    LineParser in;
 
 public:
     Client(QTcpSocket& socket);
@@ -20,12 +21,11 @@ public:
 
 signals:
     void disconnected(Client* thisConnection);
+    void newLine(Client* thisConnection, QString line);
 
 private slots:
     void onReadyRead();
 
-private:
-    void process(QString line);
 };
 
 class Scoreboard : public QObject
