@@ -15,7 +15,7 @@ DisplayConf::DisplayConf(QWidget *parent) : QWidget(parent)
 {
     auto fl = new QFormLayout;
     connStatus = new QLabel;
-    fl->addWidget(connStatus);
+    fl->addRow(connStatus);
     enabled = new QCheckBox;
     fl->addRow("Enable", enabled);
     host = new QLineEdit;
@@ -29,13 +29,6 @@ DisplayConf::DisplayConf(QWidget *parent) : QWidget(parent)
     role->addItem("Display B2");
     fl->addRow("Role", role);
     setLayout(fl);
-
-    auto reconnect = [this]{
-        QTimer::singleShot(5e3, [this]{
-            if(enabled->isChecked())
-                socket.connectToHost(host->text(), scoreboard::port);
-        });
-    };
 
     connect(enabled, &QCheckBox::clicked, this, [this](bool checked){
         if(checked)
@@ -65,10 +58,7 @@ DisplayConf::DisplayConf(QWidget *parent) : QWidget(parent)
           {
             if(enabled->isChecked())
             {
-                QTimer::singleShot(5e3, [this]{
-                    if(enabled->isChecked())
-                        socket.connectToHost(host->text(), scoreboard::port);
-                });
+                scheduleReconnect();
             }
             connStatus->setText(txt.valueToKey(state));
           }
@@ -86,10 +76,11 @@ DisplayConf::DisplayConf(QWidget *parent) : QWidget(parent)
         }
     });
 
-    connect(&socket, &QAbstractSocket::error, [](QAbstractSocket::SocketError socketError){
-        //qDebug() << "connection error" << socketError;
-        //connStatus->setText(socket.errorString());
-        //scheduleReconnect();
+    connect(&socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
+          [this](QAbstractSocket::SocketError socketError){
+        qDebug() << "connection error" << socketError;
+        connStatus->setText(socket.errorString());
+        scheduleReconnect();
     });
 }
 
