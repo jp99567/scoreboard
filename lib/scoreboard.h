@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 
+#include "protocol.h"
 #include "LineParser.h"
 
 class Client : public QObject
@@ -40,5 +41,10 @@ public:
 
 private slots:
     void removeClient(Client* client);
+    void processLine(Client* client, QString line);
+
+private:
+    void updateRole(Client* client, scoreboard::Protocol::DisplayRole role);
+    void processEvent(scoreboard::Protocol::Event);
 };
 

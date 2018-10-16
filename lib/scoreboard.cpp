@@ -1,8 +1,7 @@
 #include "scoreboard.h"
 
 #include <QDebug>
-
-#include "protocol.h"
+#include <QMetaEnum>
 
 Scoreboard::Scoreboard()
 {
@@ -13,6 +12,7 @@ Scoreboard::Scoreboard()
                 break;
             clients.emplace_back(std::make_unique<Client>(*tcpcon));
             connect(clients.back().get(), &Client::disconnected, this, &Scoreboard::removeClient);
+            connect(clients.back().get(), &Client::newLine, this, &Scoreboard::processLine);
         }
         while(listener.hasPendingConnections());
     });
@@ -35,11 +35,52 @@ void Scoreboard::removeClient(Client *client)
     clients.erase(remove);
 }
 
+void Scoreboard::processLine(Client *client, QString line)
+{
+    QTextStream ts(&line);
+    QString argTxt;
+    ts >> argTxt;
+
+    using scoreboard::Protocol;
+    switch((Protocol::ServerRequest)QMetaEnum::fromType<Protocol::ServerRequest>().keyToValue(argTxt.toStdString().c_str()))
+    {
+    case Protocol::ServerRequest::InfoDisplayRole:
+      {
+        ts >> argTxt;
+        auto role = (Protocol::DisplayRole)QMetaEnum::fromType<Protocol::DisplayRole>().keyToValue(argTxt.toStdString().c_str());
+        updateRole(client, role);
+      }
+        break;
+    case Protocol::ServerRequest::AcceptEvent:
+      {
+        ts >> argTxt;
+        auto e = (Protocol::Event)QMetaEnum::fromType<Protocol::Event>().keyToValue(argTxt.toStdString().c_str());
+        processEvent(e);
+      }
+        break;
+
+    default:
+        qDebug() << "unknown request" << line;
+        break;
+    }
+}
+
+void Scoreboard::updateRole(Client *client, scoreboard::Protocol::DisplayRole role)
+{
+    qDebug() << client << role;
+}
+
+void Scoreboard::processEvent(scoreboard::Protocol::Event)
+{
+
+}
+
 Client::Client(QTcpSocket& socket)
     :socket(socket)
 {
     connect(&socket, &QTcpSocket::readyRead, this, &Client::onReadyRead);
     connect(&socket, &QTcpSocket::disconnected, this, [this]{
+        in.clear();
         emit disconnected(this);
     });
     connect(&in, &LineParser::newLine, [this](QString line){
@@ -57,4 +98,3 @@ void Client::onReadyRead()
 {
     in.process(socket.readAll());
 }
-

@@ -12,7 +12,7 @@ class Protocol : public QObject
 {
     Q_OBJECT
 public:
-    enum DisplayRole
+    enum class DisplayRole
     {
         No,
         A1,
@@ -22,14 +22,14 @@ public:
     };
     Q_ENUM(DisplayRole)
 
-    enum Event
+    enum class Event
     {
         PlusA,
         PlusB
     };
     Q_ENUM(Event)
 
-    enum ServerRequest
+    enum class ServerRequest
     {
         InfoDisplayRole,
         AcceptEvent,
@@ -37,7 +37,7 @@ public:
     };
     Q_ENUM(ServerRequest)
 
-    enum ServerIndication
+    enum class ServerIndication
     {
         InfoScore, // ScoreA ScoreB SetA SetB Servis
         SetMainDisplayText,
