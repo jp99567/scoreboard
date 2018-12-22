@@ -11,7 +11,8 @@
 
 #include "protocol.h"
 
-DisplayConf::DisplayConf(QWidget *parent) : QWidget(parent)
+DisplayConf::DisplayConf(QWidget *parent)
+    : QWidget(parent)
 {
     auto fl = new QFormLayout;
     connStatus = new QLabel;
@@ -23,10 +24,10 @@ DisplayConf::DisplayConf(QWidget *parent) : QWidget(parent)
     fl->addRow("Server", host);
     role = new QComboBox;
     role->addItem("No Role");
-    role->addItem("Display A1");
-    role->addItem("Display A2");
-    role->addItem("Display B1");
-    role->addItem("Display B2");
+    role->addItem("Display L1");
+    role->addItem("Display L2");
+    role->addItem("Display R1");
+    role->addItem("Display R2");
     fl->addRow("Role", role);
     setLayout(fl);
 
@@ -82,14 +83,18 @@ DisplayConf::DisplayConf(QWidget *parent) : QWidget(parent)
         connStatus->setText(socket.errorString());
         scheduleReconnect();
     });
+
+    reconnect.setSingleShot(true);
+
+    connect(&reconnect, &QTimer::timeout, [this]{
+        if(enabled->isChecked())
+            qDebug() << "reconnect";
+            socket.connectToHost(host->text(), scoreboard::port);
+    });
 }
 
 void DisplayConf::scheduleReconnect()
 {
     qDebug() << "schedule reconnect";
-    QTimer::singleShot(5e3, [this]{
-        if(enabled->isChecked())
-            qDebug() << "reconnect";
-            socket.connectToHost(host->text(), scoreboard::port);
-    });
+    reconnect.start(std::chrono::milliseconds(5000));
 }

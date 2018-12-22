@@ -15,10 +15,10 @@ public:
     enum class DisplayRole
     {
         No,
-        A1,
-        A2,
-        B1,
-        B2
+        L1,
+        L2,
+        R1,
+        R2
     };
     Q_ENUM(DisplayRole)
 
@@ -28,6 +28,14 @@ public:
         PlusB
     };
     Q_ENUM(Event)
+
+    enum class Servis
+    {
+        non,
+        A,
+        B
+    };
+    Q_ENUM(Servis)
 
     enum class ServerRequest
     {
