@@ -19,7 +19,8 @@ SOURCES += \
         main.cpp
 
 INCLUDEPATH += /home/j/scoreboard/lib
-LIBS += -L/home/j/scoreboard/lib -lscoreboard
+LIBS += -L../build-scoreboard-Desktop_Qt_5_11_2_GCC_64bit-Debug
+LIBS += -lscoreboard
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

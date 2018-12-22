@@ -37,6 +37,8 @@ void Scoreboard::removeClient(Client *client)
 
 void Scoreboard::processLine(Client *client, QString line)
 {
+    qDebug() << client << line;
+
     QTextStream ts(&line);
     QString argTxt;
     ts >> argTxt;

@@ -31,4 +31,7 @@ private:
     QTcpSocket socket;
     QTimer reconnect;
     LineParser in;
+
+    void sendLine(QString line);
+    void sendRole();
 };

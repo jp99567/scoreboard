@@ -8,7 +8,6 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = scoreboard-display
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -32,7 +31,13 @@ HEADERS += \
         Widget.h
 
 INCLUDEPATH += /home/j/scoreboard/lib
-LIBS += -L/home/j/scoreboard/lib -lscoreboard
+unix:!android {
+    LIBS += -L../build-scoreboard-Desktop_Qt_5_11_2_GCC_64bit-Debug
+}
+android {
+    LIBS += -L../build-scoreboard-Android_for_armeabi_v7a_GCC_4_9_Qt_5_11_2_for_Android_ARMv7-Debug
+}
+LIBS += -lscoreboard
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

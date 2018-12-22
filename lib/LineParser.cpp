@@ -27,7 +27,7 @@ void LineParser::process(QByteArray data)
         }
         else
         {
-            if(ts.atEnd())
+            if(ts.atEnd() && in.back() != '\n')
             {
                 in = line;
                 break;
