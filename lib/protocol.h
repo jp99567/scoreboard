@@ -14,7 +14,7 @@ class Protocol : public QObject
 public:
     enum class DisplayRole
     {
-        No,
+        non,
         L1,
         L2,
         R1,
@@ -37,9 +37,19 @@ public:
     };
     Q_ENUM(Servis)
 
+    enum class DisplayFeature
+    {
+        non = 0,
+        PlaySound = 0x01,
+        Feature1 = 0x02
+    };
+    Q_FLAG(DisplayFeature)
+    Q_DECLARE_FLAGS(DisplayFeatures, DisplayFeature)
+
     enum class ServerRequest
     {
         InfoDisplayRole,
+        InfoFeatures,
         AcceptEvent,
         SetScore // ScoreA ScoreB SetA SetB Servis
     };
@@ -57,5 +67,7 @@ public:
         PlaySound
     };
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Protocol::DisplayFeatures)
 
 }

@@ -4,9 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets network
+QT       += core network
 
-TARGET = scoreboard
 TEMPLATE = lib
 CONFIG += sharedlib c++14
 
@@ -22,16 +21,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        scoreboard.cpp \
-    displayconf.cpp \
+    scoreboard.cpp \
     LineParser.cpp
 
 HEADERS += \
-        scoreboard.h \
-    displayconf.h \
+    scoreboard.h \
     protocol.h \
     LineParser.h
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}

@@ -9,8 +9,6 @@
 #include <QMetaEnum>
 #include <QHostAddress>
 
-#include "protocol.h"
-
 DisplayConf::DisplayConf(QWidget *parent)
     : QWidget(parent)
 {
@@ -22,13 +20,32 @@ DisplayConf::DisplayConf(QWidget *parent)
     host = new QLineEdit;
     host->setText("localhost");
     fl->addRow("Server", host);
+
     role = new QComboBox;
-    role->addItem("No Role");
-    role->addItem("Display L1");
-    role->addItem("Display L2");
-    role->addItem("Display R1");
-    role->addItem("Display R2");
+    {
+        using scoreboard::Protocol;
+        auto roleTxt = QMetaEnum::fromType<Protocol::DisplayRole>();
+        role->addItem(roleTxt.valueToKey((int)Protocol::DisplayRole::non));
+        role->addItem(roleTxt.valueToKey((int)Protocol::DisplayRole::L1));
+        role->addItem(roleTxt.valueToKey((int)Protocol::DisplayRole::L2));
+        role->addItem(roleTxt.valueToKey((int)Protocol::DisplayRole::R1));
+        role->addItem(roleTxt.valueToKey((int)Protocol::DisplayRole::R2));
+    }
     fl->addRow("Role", role);
+
+    connect(role, &QComboBox::currentTextChanged, [this]{
+        sendRole();
+    });
+
+    toSpeech = new QCheckBox;
+    fl->addRow("Say Score", toSpeech);
+    soundPlayer = new QCheckBox;
+    fl->addRow("Play Sounds", soundPlayer);
+    connect(soundPlayer, &QCheckBox::clicked, [this](bool checked){
+        features.setFlag(scoreboard::Protocol::DisplayFeature::PlaySound, checked);
+        sendFeatures();
+    });
+
     setLayout(fl);
 
     connect(enabled, &QCheckBox::clicked, this, [this](bool checked){
@@ -116,6 +133,11 @@ void DisplayConf::sendRole()
 {
     auto reqTxt = QMetaEnum::fromType<scoreboard::Protocol::ServerRequest>();
     sendLine(reqTxt.valueToKey((int)scoreboard::Protocol::ServerRequest::InfoDisplayRole)
-              +QString(" ") + role->currentText());
+             +QString(" ") + role->currentText());
 }
 
+void DisplayConf::sendFeatures()
+{
+    auto featuresTxt = QMetaEnum::fromType<scoreboard::Protocol::DisplayFeature>();
+    sendLine(featuresTxt.valueToKeys(features));
+}

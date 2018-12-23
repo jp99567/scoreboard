@@ -25,9 +25,11 @@ CONFIG += c++14
 
 SOURCES += \
         main.cpp \
+        displayconf.cpp \
         Widget.cpp
 
 HEADERS += \
+    displayconf.h \
         Widget.h
 
 INCLUDEPATH += /home/j/scoreboard/lib
