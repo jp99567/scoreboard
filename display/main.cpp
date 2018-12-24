@@ -1,7 +1,9 @@
 #include "Widget.h"
 #include <QApplication>
+#include <QTabWidget>
 
 #include "displayconf.h"
+#include "serverconf.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,8 +11,10 @@ int main(int argc, char *argv[])
     //Widget w;
     //w.show();
 
-    DisplayConf conf;
-    conf.show();
+    QTabWidget mainTab;
+    mainTab.addTab(new DisplayConf, "Display Config");
+    mainTab.addTab(new ServerConf, "Server Config");
+    mainTab.show();
 
     return a.exec();
 }

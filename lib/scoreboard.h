@@ -38,6 +38,7 @@ class Scoreboard : public QObject
 
 public:
     Scoreboard();
+    QString interfaces() const;
 
 private slots:
     void removeClient(Client* client);

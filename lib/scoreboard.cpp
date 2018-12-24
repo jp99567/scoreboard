@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QMetaEnum>
+#include <QNetworkInterface>
 
 Scoreboard::Scoreboard()
 {
@@ -22,7 +23,22 @@ Scoreboard::Scoreboard()
         qDebug() << listener.errorString();
     }
 
-    qDebug() << "listening";
+    qDebug() << "listening"
+             << QNetworkInterface::allAddresses();
+}
+
+QString Scoreboard::interfaces() const
+{
+    QString rv;
+    QString p = "";
+    for(auto &i : QNetworkInterface::allAddresses())
+    {
+        if(!i.isLoopback()){
+            rv.append( p + i.toString() );
+            p = " ";
+        }
+    }
+    return rv;
 }
 
 void Scoreboard::removeClient(Client *client)

@@ -26,11 +26,13 @@ CONFIG += c++14
 SOURCES += \
         main.cpp \
         displayconf.cpp \
-        Widget.cpp
+        Widget.cpp \
+    serverconf.cpp
 
 HEADERS += \
     displayconf.h \
-        Widget.h
+        Widget.h \
+    serverconf.h
 
 INCLUDEPATH += /home/j/scoreboard/lib
 unix:!android {

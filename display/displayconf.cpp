@@ -5,13 +5,23 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QComboBox>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QRadioButton>
+#include <QFrame>
 #include <QTimer>
 #include <QMetaEnum>
 #include <QHostAddress>
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QGridLayout>
+//#include <QTextToSpeech>
 
 DisplayConf::DisplayConf(QWidget *parent)
     : QWidget(parent)
 {
+    auto vl = new QVBoxLayout;
     auto fl = new QFormLayout;
     connStatus = new QLabel;
     fl->addRow(connStatus);
@@ -39,6 +49,7 @@ DisplayConf::DisplayConf(QWidget *parent)
 
     toSpeech = new QCheckBox;
     fl->addRow("Say Score", toSpeech);
+    connect(toSpeech, &QCheckBox::clicked, this, &DisplayConf::enableSpeech);
     soundPlayer = new QCheckBox;
     fl->addRow("Play Sounds", soundPlayer);
     connect(soundPlayer, &QCheckBox::clicked, [this](bool checked){
@@ -46,7 +57,50 @@ DisplayConf::DisplayConf(QWidget *parent)
         sendFeatures();
     });
 
-    setLayout(fl);
+    vl->addLayout(fl);
+
+    auto newHLine = []{
+        auto hLine = new QFrame;
+        hLine->setFrameShadow(QFrame::Shadow::Sunken);
+        hLine->setFrameShape(QFrame::Shape::HLine);
+        return hLine;
+    };
+    vl->addWidget(newHLine());
+
+    plusA = new QPushButton("Plus A");
+    plusB = new QPushButton("Plus B");
+
+    vl->addWidget(plusA);
+    vl->addWidget(plusB);
+    vl->addWidget(newHLine());
+
+    {
+        auto scoreCorrectionFrame = new QGroupBox;
+        scoreCorrectionFrame->setTitle("Score Corrections");
+        auto gl = new QGridLayout;
+        scoreL = new QSpinBox;
+        scoreR = new QSpinBox;
+        setL = new QSpinBox;
+        setR = new QSpinBox;
+        gl->addWidget(new QLabel("Score"), 0, 0);
+        gl->addWidget(scoreL, 0, 1);
+        gl->addWidget(scoreR, 0, 2);
+        gl->addWidget(new QLabel("Set"), 1, 0);
+        gl->addWidget(setL, 1, 1);
+        gl->addWidget(setR, 1, 2);
+        servisNon = new QRadioButton("ServisNon");
+        servisL = new QRadioButton("ServisL");
+        servisR = new QRadioButton("ServisR");
+        gl->addWidget(servisNon, 2, 0);
+        gl->addWidget(servisL, 2, 1);
+        gl->addWidget(servisR, 2, 2);
+        scoreCorrectionFrame->setLayout(gl);
+        vl->addWidget(scoreCorrectionFrame);
+        apply = new QPushButton("Apply Corrections");
+        vl->addWidget(apply);
+    }
+
+    setLayout(vl);
 
     connect(enabled, &QCheckBox::clicked, this, [this](bool checked){
         qDebug() << "conn enabled" << checked;
@@ -105,8 +159,9 @@ DisplayConf::DisplayConf(QWidget *parent)
         connStatus->setText(socket.errorString());
     });
 
-    reconnect.setSingleShot(true);
+    connect(&socket, &QTcpSocket::readyRead, [this]{in.process(socket.readAll())});
 
+    reconnect.setSingleShot(true);
     connect(&reconnect, &QTimer::timeout, [this]{
         if(enabled->isChecked())
         {
@@ -116,10 +171,30 @@ DisplayConf::DisplayConf(QWidget *parent)
     });
 }
 
+DisplayConf::~DisplayConf()
+{
+
+}
+
+
 void DisplayConf::scheduleReconnect()
 {
     qDebug() << "schedule reconnect";
     reconnect.start(std::chrono::milliseconds(5000));
+}
+
+void DisplayConf::enableSpeech(bool on)
+{
+    if(on)
+    {
+    //    speech = std::make_unique<QTextToSpeech>(this);
+    //    speech->setVolume(1);
+    //    speech->say("check 1 2 match ball");
+    }
+    else
+    {
+    //    speech = nullptr;
+    }
 }
 
 void DisplayConf::sendLine(QString line)
